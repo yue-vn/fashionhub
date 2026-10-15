@@ -1,0 +1,130 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using UltraStrore.Data;
+using UltraStrore.Models.CreateModels;
+using UltraStrore.Models.EditModels;
+using UltraStrore.Models.ViewModels;
+using UltraStrore.Repository;
+using UltraStrore.Services;
+
+namespace UltraStrore.Controllers
+{
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CommentController : ControllerBase
+    {
+        private readonly ICommetServices _commetServices;
+
+        public CommentController(ICommetServices commetServices)
+        {
+            _commetServices = commetServices;
+        }
+
+        // Liệt kê tất cả danh sách bình luận
+        [HttpGet("list")]
+        public async Task<ActionResult<List<BinhLuanView>>> ListBinhLuan()
+        {
+            var binhLuans = await _commetServices.ListBinhLuan();
+            if (binhLuans == null || binhLuans.Count == 0)
+            {
+                return NotFound("Không tìm thấy bình luận nào.");
+            }
+            return Ok(binhLuans);
+        }
+
+        // Thêm bình luận mới
+        [HttpPost("add")]
+        public async Task<ActionResult<BinhLuanView>> AddBinhLuan([FromBody] BinhLuanCreate binhLuan)
+        {
+            if (binhLuan == null)
+            {
+                return BadRequest("Dữ liệu bình luận không hợp lệ.");
+            }
+
+            var addedBinhLuan = await _commetServices.AddBinhLuan(binhLuan);
+            return CreatedAtAction(nameof(ListBinhLuan), new { ma = addedBinhLuan.MaSanPham }, addedBinhLuan);
+        }
+        // Sửa bình luận
+        [HttpPut("update/{maBinhLuan}")]
+        public async Task<ActionResult<BinhLuanView>> UpdateBinhLuan(int maBinhLuan, [FromBody] BinhLuanEdit binhLuan)
+        {
+            if (binhLuan == null || maBinhLuan != binhLuan.MaBinhLuan)
+            {
+                return BadRequest("Dữ liệu bình luận không hợp lệ.");
+            }
+
+            var updatedBinhLuan = await _commetServices.UpdateBinhLuan(maBinhLuan, binhLuan);
+            if (updatedBinhLuan == null)
+            {
+                return NotFound("Không tìm thấy bình luận để cập nhật.");
+            }
+
+            return Ok(updatedBinhLuan);
+        }
+
+        // Xóa bình luận
+        [HttpDelete("delete/{maBinhLuan}")]
+        public async Task<ActionResult> DeleteBinhLuan(int maBinhLuan)
+        {
+            var result = await _commetServices.DeleteBinhLuan(maBinhLuan);
+            if (!result)
+            {
+                return NotFound("Không tìm thấy bình luận để xóa.");
+            }
+
+            return Ok("Xóa bình luận thành công.");
+        }
+
+        [Authorize(Roles = "admin,staff")]
+        [HttpPut("approve/{maBinhLuan}")]
+        public async Task<ActionResult> ApproveBinhLuan(int maBinhLuan)
+        {
+            var result = await _commetServices.ApproveBinhLuan(maBinhLuan);
+            if (!result)
+            {
+                return NotFound("Không tìm thấy bình luận để duyệt.");
+            }
+
+            return Ok("Duyệt bình luận thành công.");
+        }
+
+        [Authorize(Roles = "admin,staff")]
+        [HttpPut("unapprove/{maBinhLuan}")]
+        public async Task<ActionResult> UnapproveBinhLuan(int maBinhLuan)
+        {
+            var result = await _commetServices.UnapproveBinhLuan(maBinhLuan);
+            if (!result)
+            {
+                return NotFound("Không tìm thấy bình luận để hủy duyệt.");
+            }
+            return Ok("Hủy duyệt bình luận thành công.");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetComments(string productId)
+        {
+            var comments = await _commetServices.ListBinhLuan();
+            return Ok(comments.Where(c => c.MaSanPham.StartsWith(productId.Substring(0, 6))));
+        }
+
+        [HttpPost("Like/{maBinhLuan}")]
+        public async Task<IActionResult> LikeComment(int maBinhLuan)
+        {
+            var result = await _commetServices.LikeBinhLuan(maBinhLuan);
+            if (!result) return NotFound();
+            return Ok();
+        }
+
+        [HttpPost("Unlike/{maBinhLuan}")]
+        public async Task<IActionResult> UnlikeComment(int maBinhLuan)
+        {
+            var result = await _commetServices.UnlikeBinhLuan(maBinhLuan);
+            if (!result) return NotFound();
+            return Ok();
+        }
+    }
+}

@@ -1,0 +1,21 @@
+﻿using UltraStrore.Data;
+using UltraStrore.Helper;
+using UltraStrore.Models.EditModels;
+using UltraStrore.Models.ViewModels;
+using UltraStrore.Models.CreateModels;
+namespace UltraStrore.Repository
+{
+    public interface ISanPhamServices
+    {
+        Task<List<SanPhamView>> ListSanPham(string? id);
+        Task<List<SanPhamView2>> SanPhamByID(string? id);
+        Task<List<SanPhamByIDSorted>> SanPhamByIDSorteds(string? id);
+        Task<APIResponse> EditSanPham(FullInfoSanPhamEdit info);
+        Task<APIResponse> CreateSanPham(FullCreateSanPham info);
+        Task<APIResponse> DeleteSanPham(string? id);
+        Task<APIResponse> ActiveSanPham(string? id);
+        Task<List<SanPhamView>> ListSanPhamLQ(string? id);
+        Task<APIResponse> MoTaSanPhamCreate(List<MoTaSanPhamCreateModel>? info);
+        Task<List<ProductByDateReport>> ReportByDate(SelectDateProductView? info);
+    }
+}

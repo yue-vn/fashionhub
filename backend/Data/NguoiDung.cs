@@ -1,0 +1,42 @@
+﻿
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace UltraStrore.Data
+{
+    public partial class NguoiDung
+    {
+        [Key]
+        public string? MaNguoiDung { get; set; }
+        public string? HoTen { get; set; }
+        public DateTime? NgaySinh { get; set; }
+        public string? Sdt { get; set; }
+        public string? Cccd { get; set; }
+        public string? Email { get; set; }
+        public string? TaiKhoan { get; set; }
+        public string? DiaChi { get; set; }
+        public string? MatKhau { get; set; }
+        public int? VaiTro { get; set; }
+        public int? TrangThai { get; set; }
+        public byte[]? HinhAnh { get; set; }
+        public DateTime? NgayTao { get; set; }
+        public string? MoTa { get; set; }
+        public string? Otp { get; set; }
+        public DateTime? OtpExpiry { get; set; }
+        public int? CancelConunt { get; set; }
+        public DateTime? LockoutEndDate { get; set; }
+        public bool? Isveryfied { get; set; }
+        public int? GioiTinh { get; set; }
+
+        public virtual ICollection<DanhSachDiaChi> DanhSachDiaChis { get; set; }
+        public virtual ICollection<DonHang> DonHangMaNguoiDungNavigations { get; set; }
+        public virtual ICollection<GioHang> GioHangs { get; set; }
+
+        public virtual ICollection<DonHang> DonHangMaNhanVienNavigations { get; set; } = new List<DonHang>();
+
+
+        public ICollection<TinNhan> TinNhanGui { get; set; }   // Tin nhắn người dùng gửi
+        public ICollection<TinNhan> TinNhanNhan { get; set; }
+    }
+}
