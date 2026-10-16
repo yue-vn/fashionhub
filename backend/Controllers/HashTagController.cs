@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ using UltraStrore.Services;
 
 namespace UltraStrore.Controllers
 {
-    [Authorize(Roles = "admin,staff")]
+    [Authorize(Roles = "admin,staff,Admin,Staff")]
     [Route("api/[controller]")]
     [ApiController]
     public class HashTagController : ControllerBase
@@ -22,6 +22,7 @@ namespace UltraStrore.Controllers
             _hashTagServices = hashTagServices ?? throw new ArgumentNullException(nameof(hashTagServices));
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAllHashTag()
         {
@@ -36,6 +37,7 @@ namespace UltraStrore.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetHashTag(int id)
         {
@@ -125,6 +127,7 @@ namespace UltraStrore.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("Search")]
         public async Task<IActionResult> SearchHashTag([FromQuery] string tenHashtag)
         {
@@ -139,6 +142,7 @@ namespace UltraStrore.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}/SanPham")]
         public async Task<IActionResult> GetSanPhamByHashTag(int id)
         {

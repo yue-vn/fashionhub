@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using UltraStrore.Repository;
 using UltraStrore.Models.ViewModels;
@@ -56,6 +56,8 @@ namespace UltraStrore.Controllers
             return info;
         }
         [HttpPost("DisableKhuyenMai")]
+        [HttpPut("DisableKhuyenMai")]
+        [HttpDelete("DisableKhuyenMai")]
         public async Task<APIResponse> DisableKhuyenMai(int id)
         {
             var info = await _services.DisableKhuyenMai(id);

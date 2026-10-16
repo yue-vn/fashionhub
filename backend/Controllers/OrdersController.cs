@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UltraStrore.Data;
@@ -689,7 +689,7 @@ namespace UltraStrore.Controllers
 
                 if (ordersQuery == null || !ordersQuery.Any())
                 {
-                    return NotFound(new { message = "Không tìm thấy đơn hàng nào cho người dùng này." });
+                    return Ok(new List<object>());
                 }
 
                 return Ok(ordersQuery);

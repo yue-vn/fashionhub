@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UltraStrore.Models.ViewModels;
 using UltraStrore.Repository;
 
 namespace UltraStrore.Controllers
 {
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin,staff,Admin,Staff")]
     [Route("api/[controller]")]
     [ApiController]
     public class ThongKeController : ControllerBase

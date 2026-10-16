@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -50,7 +50,11 @@ namespace UltraStrore.Controllers
                 diaChi = user.DiaChi,
                 cccd = user.Cccd,
                 ngaySinh = user.NgaySinh,
-                hinhAnh = user.HinhAnh != null ? Convert.ToBase64String(user.HinhAnh) : null
+                hinhAnh = user.HinhAnh != null && user.HinhAnh.Length > 0
+                    ? (user.HinhAnh[0] == (byte)'/' || (user.HinhAnh.Length > 4 && user.HinhAnh[0] == (byte)'h' && user.HinhAnh[1] == (byte)'t')
+                        ? System.Text.Encoding.UTF8.GetString(user.HinhAnh)
+                        : Convert.ToBase64String(user.HinhAnh))
+                    : null
             };
 
             return Ok(userDto);

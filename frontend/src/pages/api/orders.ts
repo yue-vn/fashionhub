@@ -1,26 +1,44 @@
 // src/pages/api/orders.ts
+const getBaseUrl = () => {
+    const url = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    return url.endsWith('/api') ? url : `${url}/api`;
+};
+
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export const fetchOrders = async (search: string = '') => {
-    const API_URL = import.meta.env.VITE_API_URL; // VITE_API_URL = http://localhost:8080/api
-    const response = await fetch(`${API_URL}/Orders${search ? `?search=${encodeURIComponent(search)}` : ''}`);
+    const baseUrl = getBaseUrl();
+    const response = await fetch(`${baseUrl}/Orders${search ? `?search=${encodeURIComponent(search)}` : ''}`, {
+        headers: {
+            ...getAuthHeaders(),
+        },
+    });
     if (!response.ok) throw new Error('Failed to fetch orders');
     return response.json();
 };
 
 export const approveOrder = async (id: number) => {
-    const API_URL = import.meta.env.VITE_API_URL;
-    const response = await fetch(`${API_URL}/Orders/approve/${id}`, {
+    const baseUrl = getBaseUrl();
+    const response = await fetch(`${baseUrl}/Orders/approve/${id}`, {
         method: 'PUT',
+        headers: {
+            ...getAuthHeaders(),
+        },
     });
     if (!response.ok) throw new Error('Failed to approve order');
     return response.json();
 };
 
 export const cancelOrder = async (id: number, lyDoHuy: string) => {
-    const API_URL = import.meta.env.VITE_API_URL;
-    const response = await fetch(`${API_URL}/Orders/cancel/${id}`, {
+    const baseUrl = getBaseUrl();
+    const response = await fetch(`${baseUrl}/Orders/cancel/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            ...getAuthHeaders(),
         },
         body: JSON.stringify(lyDoHuy),
     });

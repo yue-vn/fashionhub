@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UltraStrore.Data;
 using UltraStrore.Helper;
 using UltraStrore.Models.CreateModels;
+using UltraStrore.Models.DTO;
 using UltraStrore.Models.EditModels;
 using UltraStrore.Models.ViewModels;
 using UltraStrore.Repository;
@@ -227,6 +228,148 @@ public class VoucherServices : IVoucherServices
             };
         }
         catch (Exception ex)
+        {
+            return new ValidateCouponResponse
+            {
+                Success = false,
+                Message = "Lỗi hệ thống khi xác thực mã giảm giá",
+                DiscountAmount = 0,
+                FinalAmount = 0,
+            };
+        }
+    }
+
+    public async Task<ValidateCouponResponse> ValidateCouponInstant(string code, List<InstantCartItemDto> items)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(code))
+            {
+                return new ValidateCouponResponse
+                {
+                    Success = false,
+                    Message = "Vui lòng nhập mã giảm giá"
+                };
+            }
+
+            decimal originalAmount = items?.Sum(item => 
+                (item.TienSanPham ?? item.Gia ?? 0) * (item.SoLuongMua ?? item.SoLuong ?? 1)) ?? 0;
+
+            var coupon = await _context.Coupons
+                .Include(c => c.MaVoucherNavigation)
+                .FirstOrDefaultAsync(c => c.MaNhap == code && (c.TrangThai == 0 || c.TrangThai == 2));
+
+            if (coupon == null)
+            {
+                return new ValidateCouponResponse
+                {
+                    Success = false,
+                    Message = "Mã giảm giá không hợp lệ hoặc đã sử dụng"
+                };
+            }
+
+            var voucher = coupon.MaVoucherNavigation;
+            var now = DateTime.Now;
+
+            if (voucher == null)
+            {
+                return new ValidateCouponResponse
+                {
+                    Success = false,
+                    Message = "Mã giảm giá không hợp lệ"
+                };
+            }
+
+            if (voucher.TrangThai != 0)
+            {
+                return new ValidateCouponResponse
+                {
+                    Success = false,
+                    Message = "Mã giảm giá đã được sử dụng"
+                };
+            }
+
+            if (voucher.NgayBatDau > now)
+            {
+                return new ValidateCouponResponse
+                {
+                    Success = false,
+                    Message = "Mã giảm giá chưa bắt đầu"
+                };
+            }
+
+            if (voucher.NgayKetThuc < now)
+            {
+                return new ValidateCouponResponse
+                {
+                    Success = false,
+                    Message = "Mã giảm giá đã hết hạn"
+                };
+            }
+
+            if (originalAmount < (voucher.DieuKien ?? 0))
+            {
+                return new ValidateCouponResponse
+                {
+                    Success = false,
+                    Message = "Tổng tiền không đủ điều kiện để sử dụng mã giảm giá"
+                };
+            }
+
+            decimal discountAmount = 0;
+            decimal finalAmount = originalAmount;
+
+            switch (voucher.LoaiVoucher)
+            {
+                case 0:
+                    decimal discountPercentage = (decimal)(voucher.GiaTri ?? 0);
+                    discountAmount = originalAmount * (discountPercentage / 100);
+                    decimal maxDiscount = voucher.GiaTriToiDa ?? 0;
+                    if (maxDiscount > 0 && discountAmount > maxDiscount)
+                    {
+                        discountAmount = maxDiscount;
+                    }
+                    finalAmount = originalAmount - discountAmount;
+                    break;
+
+                case 1:
+                    discountAmount = (decimal)(voucher.GiaTri ?? 0);
+                    decimal maxDiscountFixed = voucher.GiaTriToiDa ?? 0;
+                    if (maxDiscountFixed > 0 && discountAmount > maxDiscountFixed)
+                    {
+                        discountAmount = maxDiscountFixed;
+                    }
+                    finalAmount = originalAmount - discountAmount;
+                    break;
+
+                case 2:
+                    discountAmount = 0;
+                    finalAmount = originalAmount;
+                    break;
+
+                default:
+                    return new ValidateCouponResponse
+                    {
+                        Success = false,
+                        Message = "Loại voucher không được hỗ trợ"
+                    };
+            }
+
+            if (finalAmount < 0)
+            {
+                finalAmount = 0;
+                discountAmount = originalAmount;
+            }
+
+            return new ValidateCouponResponse
+            {
+                Success = true,
+                Message = "Mã giảm giá hợp lệ",
+                DiscountAmount = discountAmount,
+                FinalAmount = finalAmount,
+            };
+        }
+        catch (Exception)
         {
             return new ValidateCouponResponse
             {

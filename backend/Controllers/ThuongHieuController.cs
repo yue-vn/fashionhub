@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using UltraStrore.Models.CreateModels;
 using UltraStrore.Models.EditModels;
 using UltraStrore.Models.ViewModels;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace UltraStrore.Controllers
 {
-    [Authorize(Roles = "admin,staff")]
+    [Authorize(Roles = "admin,staff,Admin,Staff")]
     [Route("api/[controller]")]
     [ApiController]
     public class ThuongHieuController : ControllerBase
@@ -21,6 +21,7 @@ namespace UltraStrore.Controllers
             _thuongHieuServices = thuongHieuServices ?? throw new ArgumentNullException(nameof(thuongHieuServices));
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAllThuongHieu()
         {
@@ -35,6 +36,7 @@ namespace UltraStrore.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetThuongHieu(int id)
         {
@@ -124,6 +126,7 @@ namespace UltraStrore.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("Search")]
         public async Task<IActionResult> SearchThuongHieu([FromQuery] string tenThuongHieu)
         {
@@ -138,6 +141,7 @@ namespace UltraStrore.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}/SanPham")]
         public async Task<IActionResult> GetSanPhamByThuongHieu(int id)
         {

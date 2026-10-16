@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UltraStrore.Data.Temp;
@@ -45,20 +45,23 @@ namespace UltraStrore.Controllers
         }
         [Authorize(Roles = "admin,staff")]
         [HttpPost("EditSanPham")]
-        public async Task<IActionResult> EditSanPham([FromBody]FullInfoSanPhamEdit info)
+        [HttpPut("EditSanPham")]
+        public async Task<IActionResult> EditSanPham([FromBody] FullInfoSanPhamEdit info)
         {
             var data = await this.services.EditSanPham(info);
             return Ok(data);
         }
         [Authorize(Roles = "admin,staff")]
         [HttpPost("CreateSanPham")]
-        public async Task<IActionResult> CreateSanPham(FullCreateSanPham? info)
+        public async Task<IActionResult> CreateSanPham([FromBody] FullCreateSanPham? info)
         {
             var data = await this.services.CreateSanPham(info);
             return Ok(data);
         }
         [Authorize(Roles = "admin,staff")]
         [HttpGet("DeleteSanPham")]
+        [HttpDelete("DeleteSanPham")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSanPham(string id)
         {
             var data = await this.services.DeleteSanPham(id);
@@ -66,6 +69,8 @@ namespace UltraStrore.Controllers
         }
         [Authorize(Roles = "admin,staff")]
         [HttpGet("ActiveSanPham")]
+        [HttpPut("ActiveSanPham")]
+        [HttpPost("ActiveSanPham")]
         public async Task<IActionResult> ActiveSanPham(string id)
         {
             var data = await this.services.ActiveSanPham(id);

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -29,11 +29,7 @@ namespace UltraStrore.Controllers
         public async Task<ActionResult<List<BinhLuanView>>> ListBinhLuan()
         {
             var binhLuans = await _commetServices.ListBinhLuan();
-            if (binhLuans == null || binhLuans.Count == 0)
-            {
-                return NotFound("Không tìm thấy bình luận nào.");
-            }
-            return Ok(binhLuans);
+            return Ok(binhLuans ?? new List<BinhLuanView>());
         }
 
         // Thêm bình luận mới
@@ -108,7 +104,10 @@ namespace UltraStrore.Controllers
         public async Task<IActionResult> GetComments(string productId)
         {
             var comments = await _commetServices.ListBinhLuan();
-            return Ok(comments.Where(c => c.MaSanPham.StartsWith(productId.Substring(0, 6))));
+            if (comments == null) return Ok(new List<BinhLuanView>());
+            if (string.IsNullOrEmpty(productId)) return Ok(comments);
+            var prefix = productId.Length >= 6 ? productId.Substring(0, 6) : productId;
+            return Ok(comments.Where(c => !string.IsNullOrEmpty(c.MaSanPham) && c.MaSanPham.StartsWith(prefix)));
         }
 
         [HttpPost("Like/{maBinhLuan}")]

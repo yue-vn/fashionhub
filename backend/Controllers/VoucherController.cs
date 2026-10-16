@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UltraStrore.Models.CreateModels;
+using UltraStrore.Models.DTO;
 using UltraStrore.Models.EditModels;
 using UltraStrore.Models.ViewModels;
 using UltraStrore.Repository;
@@ -39,6 +40,17 @@ namespace UltraStrore.Controllers
         public async Task<IActionResult> ValidateCoupon(string code, int cartId)
         {
             var response = await _voucherServices.ValidateCoupon(code, cartId);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response);
+        }
+
+        [HttpPost("ValidateInstant")]
+        public async Task<IActionResult> ValidateInstant([FromQuery] string code, [FromBody] List<InstantCartItemDto> cartItems)
+        {
+            var response = await _voucherServices.ValidateCouponInstant(code, cartItems);
             if (response.Success)
             {
                 return Ok(response);

@@ -1,4 +1,4 @@
-﻿using UltraStrore.Helper;
+using UltraStrore.Helper;
 using UltraStrore.Models.CreateModels;
 using UltraStrore.Models.EditModels;
 using UltraStrore.Models.ViewModels;
@@ -16,5 +16,6 @@ namespace UltraStrore.Repository
         Task<bool> DeleteVoucher(int maVoucher);
         Task<bool> UpdateCoupon(int couponId, string maNguoiDung);
         Task<ValidateCouponResponse> ValidateCoupon(string code, int cartId);
+        Task<ValidateCouponResponse> ValidateCouponInstant(string code, List<UltraStrore.Models.DTO.InstantCartItemDto> items);
     }
 }

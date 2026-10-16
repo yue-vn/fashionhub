@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -36,20 +36,23 @@ namespace UltraStrore.Controllers
 
         [Authorize(Roles = "admin,staff")]
         [HttpPost("CreateComboSanPham")]
-        public async Task<IActionResult> AddCombo(ComboCreate info)
+        public async Task<IActionResult> AddCombo([FromBody] ComboCreate info)
         {
             var data = await services.AddCombo(info);  
             return Ok();
         }
         [Authorize(Roles = "admin,staff")]
         [HttpPost("EditComboSanPham")]
-        public async Task<IActionResult> EditCombo(ComboEdit info)
+        [HttpPut("EditComboSanPham")]
+        public async Task<IActionResult> EditCombo([FromBody] ComboEdit info)
         {
             var data = await services.EditCombo(info);
             return Ok(data);
         }
         [Authorize(Roles = "admin,staff")]
         [HttpGet("DeleteCombo")]
+        [HttpDelete("DeleteCombo")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCombo(int id)
         {
             var data = await services.XoaCombo(id);

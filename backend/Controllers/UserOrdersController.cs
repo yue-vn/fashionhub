@@ -115,7 +115,7 @@ namespace UltraStrore.Controllers
 
             if (ordersQuery == null || !ordersQuery.Any())
             {
-                return NotFound(new { message = "Không tìm thấy đơn hàng nào cho người dùng này." });
+                return Ok(new List<object>());
             }
 
             var orders = ordersQuery.Select(d => new
@@ -217,7 +217,7 @@ namespace UltraStrore.Controllers
 
             if (!orders.Any())
             {
-                return NotFound(new { message = "Không tìm thấy đơn hàng nào khớp với tiêu chí tìm kiếm." });
+                return Ok(new List<object>());
             }
 
             var result = orders.Select(d => new
